@@ -1,11 +1,5 @@
 {
   "functions": {
-    "api/index.py": { "runtime": "python3.11" },
-    "api/analyze.py": { "runtime": "python3.11" }
-  },
-  "routes": [
-    { "src": "/api/analyze", "dest": "/api/analyze.py" },
-    { "src": "/api", "dest": "/api/index.py" }
-  ]
+    "api/**/*.py": { "runtime": "python3.11" }
+  }
 }
-
