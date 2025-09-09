@@ -43,3 +43,12 @@ async def analyze(body: AnalyzeRequest):
         return {"ok": True, "data": meta, "text": text}
     except Exception as e:
         return JSONResponse(status_code=400, content={"ok": False, "error": str(e)})
+
+@app.post("/api")
+async def analyze_root(body: AnalyzeRequest):
+    try:
+        meta = fetch_video_meta(body.url)
+        text = render_clipboard_text(meta)
+        return {"ok": True, "data": meta, "text": text}
+    except Exception as e:
+        return JSONResponse(status_code=400, content={"ok": False, "error": str(e)})

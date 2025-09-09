@@ -13,7 +13,7 @@ async function analyze() {
     return;
   }
   try {
-    const resp = await fetch('/api/analyze', {
+    const resp = await fetch('/api', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url })
