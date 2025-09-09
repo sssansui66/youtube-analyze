@@ -17,10 +17,12 @@ class AnalyzeBody(BaseModel):
 
 
 @app.get("/")
+@app.get("/api")
 async def root():
     return {"ok": True, "message": "Use POST /api/analyze"}
 
 @app.post("/analyze")
+@app.post("/api/analyze")
 async def analyze(body: AnalyzeBody):
     vid = parse_video_id(body.url)
     if not vid:
