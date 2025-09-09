@@ -34,6 +34,11 @@ async def api_root():
         "endpoints": {"POST": ["/api/analyze"]},
     }
 
+@app.get("/analyze")
+async def analyze_get_hint():
+    # Helpful hint for browsers hitting GET directly
+    return {"ok": True, "message": "Use POST /api/analyze with JSON { 'url': '...' }"}
+
 
 @app.post("/api/analyze")
 async def analyze(body: AnalyzeRequest):
@@ -44,8 +49,28 @@ async def analyze(body: AnalyzeRequest):
     except Exception as e:
         return JSONResponse(status_code=400, content={"ok": False, "error": str(e)})
 
+@app.post("/analyze")
+async def analyze_alias(body: AnalyzeRequest):
+    # Accept POST /analyze for environments that strip '/api' via reverse proxy
+    try:
+        meta = fetch_video_meta(body.url)
+        text = render_clipboard_text(meta)
+        return {"ok": True, "data": meta, "text": text}
+    except Exception as e:
+        return JSONResponse(status_code=400, content={"ok": False, "error": str(e)})
+
 @app.post("/api")
 async def analyze_root(body: AnalyzeRequest):
+    try:
+        meta = fetch_video_meta(body.url)
+        text = render_clipboard_text(meta)
+        return {"ok": True, "data": meta, "text": text}
+    except Exception as e:
+        return JSONResponse(status_code=400, content={"ok": False, "error": str(e)})
+
+@app.post("/")
+async def analyze_root_alias(body: AnalyzeRequest):
+    # Allow POST / when API is mounted at '/' or behind a path prefix
     try:
         meta = fetch_video_meta(body.url)
         text = render_clipboard_text(meta)

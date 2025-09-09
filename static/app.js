@@ -13,12 +13,20 @@ async function analyze() {
     return;
   }
   try {
-    // Always call the explicit analyze endpoint to avoid routing mismatches on hosts
-    const resp = await fetch('/api/analyze', {
+    // Prefer '/api/analyze'; fall back to '/analyze' if a proxy strips '/api'
+    let resp = await fetch('/api/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url })
     });
+    if (resp.status === 404) {
+      // Try fallback path commonly used behind reverse proxies
+      resp = await fetch('/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+    }
     const ct = resp.headers.get('content-type') || '';
     let data;
     if (ct.includes('application/json')) {
