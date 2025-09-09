@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YouTube Analyze</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <script defer src="/static/app.js"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; margin: 24px; }
+    .row { display: flex; gap: 8px; align-items: center; }
+    input[type=text] { width: 100%; padding: 10px; font-size: 14px; }
+    button { padding: 10px 14px; cursor: pointer; }
+    .container { max-width: 900px; margin: 0 auto; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+    .card { border: 1px solid #ddd; border-radius: 8px; padding: 12px; }
+    .muted { color: #666; font-size: 12px; }
+    textarea { width: 100%; height: 180px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    .kv { display: grid; grid-template-columns: 120px 1fr; gap: 8px; }
+    .kv div { padding: 4px 0; }
+    .label { color: #666; }
+  </style>
+  </head>
+<body>
+  <div class="container">
+    <h2>YouTube 视频信息提取</h2>
+    <div class="row">
+      <input id="url" type="text" placeholder="粘贴 YouTube 视频链接，如 https://www.youtube.com/watch?v=..." />
+      <button id="analyze">提取</button>
+    </div>
+    <div id="hint" class="muted" style="margin-top:8px;">可选：设置环境变量 YOUTUBE_API_KEY 使用官方 API；YTDLP_COOKIE_FILE 提升受限视频可用性。</div>
+
+    <div id="result" style="display:none;">
+      <div class="grid">
+        <div class="card">
+          <h3 style="margin-top:0;">结果</h3>
+          <div class="kv" id="kv"></div>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0;">一键复制</h3>
+          <textarea id="clip"></textarea>
+          <div class="row" style="margin-top:8px;">
+            <button id="copy">复制到剪贴板</button>
+          </div>
+        </div>
+      </div>
+      <div class="muted" id="source" style="margin-top:6px;"></div>
+    </div>
+
+    <div id="error" class="card" style="display:none; border-color:#f2cfcf; background:#fff8f8; color:#900; margin-top:16px;"></div>
+  </div>
+</body>
+</html>
+
