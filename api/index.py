@@ -16,6 +16,10 @@ class AnalyzeBody(BaseModel):
     url: str
 
 
+@app.get("/")
+async def root():
+    return {"ok": True, "message": "Use POST /api/analyze"}
+
 @app.post("/analyze")
 async def analyze(body: AnalyzeBody):
     vid = parse_video_id(body.url)
@@ -30,4 +34,3 @@ async def analyze(body: AnalyzeBody):
         return {"ok": True, "data": meta, "text": text}
     except Exception as e:
         return {"ok": False, "error": str(e)}
-

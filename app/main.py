@@ -26,6 +26,14 @@ class AnalyzeRequest(BaseModel):
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
+@app.get("/api")
+async def api_root():
+    return {
+        "ok": True,
+        "message": "Use POST /api/analyze",
+        "endpoints": {"POST": ["/api/analyze"]},
+    }
+
 
 @app.post("/api/analyze")
 async def analyze(body: AnalyzeRequest):

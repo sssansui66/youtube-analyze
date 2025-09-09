@@ -18,8 +18,19 @@ async function analyze() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url })
     });
-    const data = await resp.json();
-    if (!data.ok) throw new Error(data.error || '提取失败');
+    const ct = resp.headers.get('content-type') || '';
+    let data;
+    if (ct.includes('application/json')) {
+      try {
+        data = await resp.json();
+      } catch (err) {
+        throw new Error(`[${resp.status}] JSON解析失败: ${String(err)}`);
+      }
+    } else {
+      const text = await resp.text();
+      throw new Error(`[${resp.status}] 非JSON响应: ${text.slice(0, 120)}`);
+    }
+    if (!resp.ok || !data?.ok) throw new Error((data && data.error) || `请求失败(${resp.status})`);
 
     const m = data.data || {};
     const rows = [
