@@ -1,9 +1,18 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
 from app.api_cli import parse_video_id, fetch_api, render_clip_text
 
 app = FastAPI(title="YouTube Analyze API - analyze")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class AnalyzeBody(BaseModel):
@@ -29,4 +38,3 @@ async def analyze(body: AnalyzeBody):
         return {"ok": True, "data": meta, "text": text}
     except Exception as e:
         return {"ok": False, "error": str(e)}
-

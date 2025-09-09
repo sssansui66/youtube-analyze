@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
 from app.api_cli import parse_video_id, fetch_api, render_clip_text
@@ -11,6 +12,15 @@ except Exception:
 
 app = FastAPI(title="YouTube Analyze API")
 
+# Allow cross-origin requests to support different hosting setups
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 class AnalyzeBody(BaseModel):
     url: str
@@ -21,9 +31,30 @@ class AnalyzeBody(BaseModel):
 async def root():
     return {"ok": True, "message": "Use POST /api/analyze"}
 
+@app.get("/analyze")
+async def analyze_get_hint():
+    # Helpful hint for browsers hitting GET /api/analyze directly via this function
+    return {"ok": True, "message": "Use POST /api/analyze with JSON { 'url': '...' }"}
+
 @app.post("/analyze")
 @app.post("/api/analyze")
 async def analyze(body: AnalyzeBody):
+    vid = parse_video_id(body.url)
+    if not vid:
+        return {"ok": False, "error": "无法解析视频ID，请确认是视频链接"}
+    api_key = os.getenv("YOUTUBE_API_KEY")
+    if not api_key:
+        return {"ok": False, "error": "服务器未配置 YOUTUBE_API_KEY"}
+    try:
+        meta = fetch_api(vid, api_key)
+        text = render_clip_text(meta)
+        return {"ok": True, "data": meta, "text": text}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+@app.post("/api")
+async def analyze_api_alias(body: AnalyzeBody):
+    # Accept POST /api as an alias for compatibility with some frontends
     vid = parse_video_id(body.url)
     if not vid:
         return {"ok": False, "error": "无法解析视频ID，请确认是视频链接"}

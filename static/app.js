@@ -13,7 +13,8 @@ async function analyze() {
     return;
   }
   try {
-    const resp = await fetch('/api', {
+    // Always call the explicit analyze endpoint to avoid routing mismatches on hosts
+    const resp = await fetch('/api/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url })

@@ -53,10 +53,11 @@
   // Override API endpoint to Vercel function path
   const origFetch = window.fetch;
   window.fetch = (url, options) => {
+    // Normalize legacy '/api' calls to the explicit analyze endpoint
+    if (url === '/api') return origFetch('/api/analyze', options);
     if (url === '/api/analyze') return origFetch('/api/analyze', options);
     return origFetch(url, options);
   };
   </script>
 </body>
 </html>
-
